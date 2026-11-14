@@ -89,53 +89,131 @@ class _LockScreenState extends State<LockScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+    final muted = cs.onSurface.withValues(alpha: 0.66);
     return Scaffold(
-      backgroundColor: cs.surface,
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 420),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              Icon(Icons.stars_rounded, size: 56, color: cs.primary),
-              const SizedBox(height: 8),
-              Text('ZentriX',
-                  style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 16),
-              Text(_title, style: Theme.of(context).textTheme.headlineSmall),
-              const SizedBox(height: 16),
-              if (_step == _Step.forgot) ..._forgotBody(),
-              if (_step == _Step.showCode) ..._codeBody(),
-              if (_step != _Step.forgot && _step != _Step.showCode) ...[
-                PatternPad(onComplete: _onPattern, enabled: !_blocked),
-                const SizedBox(height: 12),
-                Text(
-                  _step == _Step.setup1
-                      ? 'Drag across at least $_minDots stars. Remember the order!'
-                      : _step == _Step.unlock
-                          ? 'Drag across the stars in your secret order.'
-                          : '',
-                  textAlign: TextAlign.center,
-                ),
-              ],
-              if (_msg.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(_msg, style: TextStyle(color: cs.error)),
-                ),
-              const SizedBox(height: 8),
-              if (_step == _Step.unlock)
-                TextButton(
-                    onPressed: () => setState(() {
-                          _step = _Step.forgot;
-                          _msg = '';
-                        }),
-                    child: const Text('Forgot the puzzle?')),
-              if (widget.onCancel != null && _step != _Step.showCode)
-                TextButton(
-                    onPressed: widget.onCancel, child: const Text('Cancel')),
-            ]),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      body: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              theme.scaffoldBackgroundColor,
+              Color.lerp(theme.scaffoldBackgroundColor, cs.primary, isDark ? 0.13 : 0.055)!,
+              theme.scaffoldBackgroundColor,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 440),
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  Container(
+                    width: 76,
+                    height: 76,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [cs.primary, Color.lerp(cs.primary, cs.surface, 0.38)!],
+                      ),
+                      boxShadow: [
+                        BoxShadow(color: cs.primary.withValues(alpha: 0.28), blurRadius: 28, spreadRadius: 1),
+                      ],
+                    ),
+                    alignment: Alignment.center,
+                    child: Text('Z', style: TextStyle(
+                      fontSize: 48, height: 1, fontWeight: FontWeight.w900,
+                      color: cs.onPrimary, fontStyle: FontStyle.italic,
+                    )),
+                  ),
+                  const SizedBox(height: 14),
+                  Text('ZENTRIX', style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w900, letterSpacing: 4,
+                  )),
+                  const SizedBox(height: 4),
+                  Text('BUSINESS MANAGEMENT SYSTEM', style: theme.textTheme.labelSmall?.copyWith(
+                    color: muted, letterSpacing: 2.1, fontWeight: FontWeight.w600,
+                  ), textAlign: TextAlign.center),
+                  const SizedBox(height: 28),
+                  Card(
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      side: BorderSide(color: cs.primary.withValues(alpha: 0.24)),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(22, 24, 22, 18),
+                      child: Column(mainAxisSize: MainAxisSize.min, children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                          decoration: BoxDecoration(
+                            color: cs.primary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: Row(mainAxisSize: MainAxisSize.min, children: [
+                            Icon(_step == _Step.unlock ? Icons.lock_rounded : Icons.shield_outlined,
+                              size: 15, color: cs.primary),
+                            const SizedBox(width: 7),
+                            Text(_step == _Step.unlock ? 'SECURE ACCESS' : 'SECURITY SETUP',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: cs.primary, fontWeight: FontWeight.w800, letterSpacing: 1.2,
+                              )),
+                          ]),
+                        ),
+                        const SizedBox(height: 18),
+                        Text(_title, textAlign: TextAlign.center,
+                          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
+                        const SizedBox(height: 18),
+                        if (_step == _Step.forgot) ..._forgotBody(),
+                        if (_step == _Step.showCode) ..._codeBody(),
+                        if (_step != _Step.forgot && _step != _Step.showCode) ...[
+                          PatternPad(onComplete: _onPattern, enabled: !_blocked),
+                          const SizedBox(height: 12),
+                          Text(
+                            _step == _Step.setup1
+                                ? 'Connect at least $_minDots dots. Remember your pattern.'
+                                : _step == _Step.unlock
+                                    ? 'Draw your saved pattern to continue.'
+                                    : 'Repeat the same pattern to confirm.',
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodySmall?.copyWith(color: muted),
+                          ),
+                        ],
+                        if (_msg.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: Text(_msg, textAlign: TextAlign.center,
+                              style: TextStyle(color: cs.error, fontWeight: FontWeight.w600)),
+                          ),
+                        if (_step == _Step.unlock)
+                          TextButton(
+                            onPressed: () => setState(() {
+                              _step = _Step.forgot;
+                              _msg = '';
+                            }),
+                            child: const Text('Forgot your pattern?'),
+                          ),
+                        if (widget.onCancel != null && _step != _Step.showCode)
+                          TextButton(onPressed: widget.onCancel, child: const Text('Cancel')),
+                      ]),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Text('MONITOR  •  MANAGE  •  GROW',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: muted, letterSpacing: 1.7, fontWeight: FontWeight.w600,
+                    )),
+                ]),
+              ),
+            ),
           ),
         ),
       ),
