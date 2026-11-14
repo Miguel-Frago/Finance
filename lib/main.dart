@@ -11,19 +11,19 @@ Future<void> main() async {
   await AppDb.init();
   await Settings.load();
   await RatesRepo.syncAll();
-  themeId.value = Settings.get('theme', 'light');
-  runApp(const BfmApp());
+  themeId.value = normalizeThemeId(Settings.get('theme', 'violet'));
+  runApp(const ZentriXApp());
 }
 
-class BfmApp extends StatelessWidget {
-  const BfmApp({super.key});
+class ZentriXApp extends StatelessWidget {
+  const ZentriXApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<String>(
       valueListenable: themeId,
       builder: (context, id, _) => MaterialApp(
-        title: 'Business Financial Monitoring',
+        title: 'ZentriX Business Management System',
         debugShowCheckedModeBanner: false,
         theme: buildTheme(id),
         builder: (context, child) => LockGate(child: child!),

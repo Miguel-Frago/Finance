@@ -218,13 +218,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               .push(MaterialPageRoute(builder: (_) => const PayrollRulesScreen())),
         ),
       ]),
-      _section('Theme', [
-        Wrap(spacing: 8, runSpacing: 8, children: [
+      _section('Appearance', [
+        const Text('Choose a complete ZentriX palette. Each preset changes the theme and accent together.'),
+        const SizedBox(height: 12),
+        Wrap(spacing: 10, runSpacing: 10, children: [
           for (final e in themeChoices.entries)
             ChoiceChip(
               avatar: CircleAvatar(backgroundColor: themeSwatches[e.key]),
               label: Text(e.value),
-              selected: themeId.value == e.key,
+              selected: normalizeThemeId(themeId.value) == e.key,
               onSelected: (_) async {
                 themeId.value = e.key;
                 await Settings.set('theme', e.key);

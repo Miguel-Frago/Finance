@@ -100,7 +100,7 @@ class _LockScreenState extends State<LockScreen> {
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               Icon(Icons.stars_rounded, size: 56, color: cs.primary),
               const SizedBox(height: 8),
-              Text('Business Financial Monitoring',
+              Text('ZentriX',
                   style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 16),
               Text(_title, style: Theme.of(context).textTheme.headlineSmall),
