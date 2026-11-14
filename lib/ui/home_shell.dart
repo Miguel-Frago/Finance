@@ -56,10 +56,35 @@ class _HomeShellState extends State<HomeShell> {
       child: ListView(
         padding: const EdgeInsets.symmetric(vertical: 12),
         children: [
-          const ListTile(
-            leading: Icon(Icons.stars_rounded),
-            title: Text('Business Financial\nMonitoring',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(16, 18, 16, 16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Icons.auto_awesome_rounded, size: 30),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('ZENTRIX',
+                          style: TextStyle(
+                            fontSize: 19,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 2.2,
+                          )),
+                      SizedBox(height: 3),
+                      Text('BUSINESS MANAGEMENT SYSTEM',
+                          style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 1.05,
+                          )),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
           const Divider(),
           for (var n = 0; n < _dests.length; n++)
